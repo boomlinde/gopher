@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -88,6 +89,25 @@ func gettree(base string) (map[string]bool, error) {
 	return m, err
 }
 
+func newselector(line string) *gopherline {
+	ret := gopherline{'i', "", "/", config.name, 70}
+	ret.ftype, line = rune(line[0]), line[1:]
+	fields := strings.Split(line, "\t")
+	if len(fields) > 0 {
+		ret.text = fields[0]
+	}
+	if len(fields) > 1 {
+		ret.path = fields[1]
+	}
+	if len(fields) > 2 {
+		ret.host = fields[2]
+	}
+	if len(fields) > 3 {
+		ret.port, _ = strconv.Atoi(fields[3])
+	}
+	return &ret
+}
+
 func getheader(p string) gopherdir {
 	data, err := ioutil.ReadFile(path.Join(p, ".head"))
 	l := gopherdir{}
@@ -96,14 +116,8 @@ func getheader(p string) gopherdir {
 	}
 	lines := strings.Split(strings.Replace(string(data), "\r", "", -1), "\n")
 	for _, line := range lines {
-		if strings.HasPrefix(line, "i") {
-			l = append(l, &gopherline{
-				ftype: 'i',
-				text:  line[1:],
-				path:  "/",
-				host:  "none",
-				port:  0,
-			})
+		if len(line) > 0 {
+			l = append(l, newselector(line))
 		}
 	}
 	return l
