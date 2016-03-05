@@ -12,3 +12,14 @@ var tpltext = `<!doctype html>
 {{end}}</pre>
 </body>
 </html>`
+
+var mdtpltext = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{.Title}}</title>
+</head>
+<body>
+{{.Page}}
+</body>
+</html>`

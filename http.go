@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/russross/blackfriday"
 )
 
 type tplRow struct {
@@ -51,7 +53,18 @@ func serveHttp(addr string) {
 	if err == nil {
 		tpltext = string(tpldata)
 	}
+
+	mdtpldata, err := ioutil.ReadFile(filepath.Join(config.dir, ".mdtemplate"))
+	if err == nil {
+		mdtpltext = string(mdtpldata)
+	}
+
 	tpl, err := template.New("gophermenu").Parse(tpltext)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mdtpl, err := template.New("md").Parse(mdtpltext)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,6 +82,22 @@ func serveHttp(addr string) {
 
 		if isdir(p) {
 			if err := renderHttpMenu(w, tpl, getdir(p, r.URL.Path)); err != nil {
+				http.Error(w, err.Error(), 500)
+				return
+			}
+		} else if strings.HasSuffix(p, ".md") {
+			mddata, err := ioutil.ReadFile(p)
+			if err != nil {
+				http.Error(w, "File not found", 404)
+				return
+			}
+			rendered := blackfriday.MarkdownBasic(mddata)
+
+			err = mdtpl.Execute(w, struct {
+				Title string
+				Page  template.HTML
+			}{config.name, template.HTML(rendered)})
+			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
 			}
