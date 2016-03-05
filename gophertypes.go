@@ -6,11 +6,11 @@ import (
 )
 
 type gopherline struct {
-	Ftype rune   `json:"ftype"`
-	Text  string `json:"text"`
-	Path  string `json:"path"`
-	Host  string `json:"host"`
-	Port  int    `json:"port"`
+	Ftype rune
+	Text  string
+	Path  string
+	Host  string
+	Port  int
 }
 
 type gopherdir []*gopherline
@@ -24,13 +24,13 @@ func (l *gopherline) serialize(w io.Writer) {
 	w.Write([]byte("\r\n"))
 }
 
-var notfound = gopherdir{
-	&gopherline{'i', "File not found", "/", "none", 0},
-}
-
 func (d gopherdir) serialize(w io.Writer) {
 	for _, l := range d {
 		l.serialize(w)
 	}
 	w.Write([]byte(".\r\n"))
+}
+
+var notfound = gopherdir{
+	&gopherline{'i', "File not found", "/", "none", 0},
 }

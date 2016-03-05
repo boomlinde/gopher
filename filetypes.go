@@ -11,7 +11,13 @@ var filetypes = map[string]rune{
 	".png": 'I', ".html": 'h', ".ogg": 's', ".mp3": 's',
 	".wav": 's', ".mod": 's', ".it": 's', ".xm": 's',
 	".mid": 's', ".vgm": 's', ".s": '0', ".c": '0',
-	".py": '0', ".h": '0', ".md": '0',
+	".py": '0', ".h": '0', ".md": '0', ".go": '0',
+	".fs": '0',
+}
+
+var displaytypes = map[rune]string{
+	'0': "TXT", '1': "DIR", 's': "SND", 'g': "GIF",
+	'l': "PIC", '9': "BIN", '5': "ARC", 'h': "HTM",
 }
 
 func getft(f os.FileInfo) rune {

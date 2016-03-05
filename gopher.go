@@ -20,6 +20,7 @@ var config struct {
 	extport int
 	name    string
 	dir     string
+	http    string
 }
 
 func topath(base, sel string) string {
@@ -148,6 +149,7 @@ func main() {
 	flag.IntVar(&config.extport, "e", 70, "The externally visible port")
 	flag.StringVar(&config.dir, "d", ".", "The gopher root dir")
 	flag.StringVar(&config.name, "n", hn, "The hostname")
+	flag.StringVar(&config.http, "w", "", "HTTP server address")
 	flag.Parse()
 
 	config.dir, err = filepath.Abs(config.dir)
@@ -160,6 +162,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer l.Close()
+
+	if config.http != "" {
+		serveHttp(config.http)
+	}
 
 	for {
 		conn, err := l.Accept()
