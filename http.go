@@ -130,5 +130,5 @@ func serveHttp(addr string) {
 		WriteTimeout:   10 & time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	go log.Fatal(s.ListenAndServe())
+	log.Fatal(s.ListenAndServe())
 }

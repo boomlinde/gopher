@@ -164,7 +164,7 @@ func main() {
 	defer l.Close()
 
 	if config.http != "" {
-		serveHttp(config.http)
+		go serveHttp(config.http)
 	}
 
 	for {
