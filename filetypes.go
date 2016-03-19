@@ -17,7 +17,7 @@ var filetypes = map[string]rune{
 
 var displaytypes = map[rune]string{
 	'0': "TXT", '1': "DIR", 's': "SND", 'g': "GIF",
-	'l': "PIC", '9': "BIN", '5': "ARC", 'h': "HTM",
+	'I': "PIC", '9': "BIN", '5': "ARC", 'h': "HTM",
 }
 
 func getft(f os.FileInfo) rune {
