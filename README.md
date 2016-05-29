@@ -8,23 +8,30 @@ Usage
 -----
 
     -d string
-       The gopher root dir (default ".")
-    -e int
-       The externally visible port (default 70)
-    -i int
-       The port to listen to (default 7000)
+        The gopher root dir (default ".")
     -n string
-       The hostname (defaults to your hostname)
-
-Gopher servers normally listens to connections on a privileged port. The
-internal and external flags are used to let the server run unprivileged while
-still naming a privileged port for its selectors, so that a privileged program,
-e.g. `rinetd`, can forward connections to the unprivileged port.
+        The hostname (default your hostname)
+    -p int
+        The port to listen to (default 70)
+    -w string
+        HTTP server address
 
 Metadata
 --------
 
-`gopher` reads `.head` files in its directories to produce page headers. These
-contain gopher selectors. The selectors only have to be partially written, and
-the server will fill missing columns with dummy data. This can be used to
-create a header for a file listing, or to produce an arbitrary Gopher page.
+`gopher` reads `.head` files in its directories to produce page headers.
+These contain gopher selectors. The selectors only have to be partially
+written, and the server will fill missing columns with dummy data. This
+can be used to create a header for a file listing, or to produce an
+arbitrary Gopher page.
+
+HTTP
+----
+
+`gopher` will optionally serve HTTP, given an address in the form
+"host:port". This will mirror the gopher content and optionally use HTML
+templates:
+
+-   `.template`: The template used for gopher menus
+-   `.mdtemplate`: The template used for Markdown documents
+

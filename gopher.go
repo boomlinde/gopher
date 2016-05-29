@@ -16,11 +16,10 @@ import (
 )
 
 var config struct {
-	intport int
-	extport int
-	name    string
-	dir     string
-	http    string
+	port int
+	name string
+	dir  string
+	http string
 }
 
 func topath(base, sel string) string {
@@ -37,7 +36,7 @@ func contains(base, sel string) bool {
 }
 
 func newselector(line string) *gopherline {
-	ret := gopherline{'i', "", "/", config.name, config.extport}
+	ret := gopherline{'i', "", "/", config.name, config.port}
 	ret.Ftype, line = rune(line[0]), line[1:]
 	fields := strings.Split(line, "\t")
 	if len(fields) > 0 {
@@ -87,7 +86,7 @@ func getdir(p, sel string) gopherdir {
 			Text:  fname,
 			Path:  filepath.ToSlash(filepath.Join("/", sel, fname)),
 			Host:  config.name,
-			Port:  config.extport,
+			Port:  config.port,
 		}
 		dir = append(dir, &line)
 	}
@@ -145,8 +144,7 @@ func main() {
 		hn = "localhost"
 	}
 
-	flag.IntVar(&config.intport, "i", 7000, "The port to listen to")
-	flag.IntVar(&config.extport, "e", 70, "The externally visible port")
+	flag.IntVar(&config.port, "p", 70, "The port to listen to")
 	flag.StringVar(&config.dir, "d", ".", "The gopher root dir")
 	flag.StringVar(&config.name, "n", hn, "The hostname")
 	flag.StringVar(&config.http, "w", "", "HTTP server address")
@@ -157,7 +155,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", config.intport))
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", config.port))
 	if err != nil {
 		log.Fatal(err)
 	}

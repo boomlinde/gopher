@@ -33,7 +33,7 @@ func renderHttpMenu(w http.ResponseWriter, tpl *template.Template, d gopherdir) 
 
 		if strings.HasPrefix(x.Path, "URL:") {
 			tr.Link = template.URL(x.Path[4:])
-		} else if x.Host == config.name && x.Port == config.extport {
+		} else if x.Host == config.name && x.Port == config.port {
 			tr.Link = template.URL(x.Path)
 		} else {
 			tr.Link = template.URL(fmt.Sprintf("gopher://%s:%d/%c%s", x.Host, x.Port, x.Ftype, x.Path))
