@@ -13,9 +13,11 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const selectorcap = 4096
+const timeout = 5 * time.Second
 
 var config struct {
 	port int
@@ -173,6 +175,11 @@ func main() {
 	for {
 		conn, err := l.Accept()
 		if err != nil {
+			continue
+		}
+		conn.SetReadDeadline(time.Now().Add(timeout))
+		if err != nil {
+			conn.Close()
 			continue
 		}
 		go handle(conn)
