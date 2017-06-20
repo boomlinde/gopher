@@ -27,16 +27,12 @@ var config struct {
 }
 
 func topath(base, sel string) string {
-	base = filepath.FromSlash(base)
 	sel = filepath.FromSlash(sel)
 	return filepath.Join(base, sel)
 }
 
-func contains(base, sel string) bool {
-	base = filepath.FromSlash(base)
-	sel = filepath.FromSlash(sel)
-	joint := filepath.Clean(filepath.Join(base, sel))
-	return strings.HasPrefix(joint, base)
+func contains(sel string) bool {
+	return !strings.Contains(filepath.Clean(sel), "..")
 }
 
 func newselector(line string) *gopherline {
@@ -122,7 +118,7 @@ func handle(conn io.ReadWriteCloser) {
 
 	sel := string(buf)
 
-	if !contains(config.dir, sel) {
+	if !contains(sel) {
 		notfound.serialize(conn)
 		return
 	}

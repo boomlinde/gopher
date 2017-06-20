@@ -73,7 +73,7 @@ func serveHttp(addr string) {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var p string
 
-		if !contains(config.dir, r.URL.Path) {
+		if !contains(r.URL.Path) {
 			http.Error(w, "File not found", 404)
 			return
 		}
