@@ -15,6 +15,8 @@ import (
 	"strings"
 )
 
+const selectorcap = 4096
+
 var config struct {
 	port int
 	name string
@@ -103,18 +105,21 @@ func isdir(p string) bool {
 
 func handle(conn io.ReadWriteCloser) {
 	defer conn.Close()
-	r := bufio.NewReader(conn)
-	sel := ""
-	for {
-		buf, prefix, err := r.ReadLine()
-		if err != nil {
-			log.Println(err)
-		}
-		sel += string(buf)
-		if !prefix {
-			break
-		}
+
+	r := bufio.NewReader(io.LimitReader(conn, selectorcap))
+
+	buf, toolarge, err := r.ReadLine()
+	if err != nil {
+		notfound.serialize(conn)
+		return
 	}
+	if toolarge {
+		notfound.serialize(conn)
+		return
+	}
+
+	sel := string(buf)
+
 	if !contains(config.dir, sel) {
 		notfound.serialize(conn)
 		return
