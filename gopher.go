@@ -101,7 +101,7 @@ func isdir(p string) bool {
 	return fi.IsDir()
 }
 
-func handle(conn net.Conn) {
+func handle(conn io.ReadWriteCloser) {
 	defer conn.Close()
 	r := bufio.NewReader(conn)
 	sel := ""
