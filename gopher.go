@@ -55,8 +55,9 @@ func newselector(line string) *gopherline {
 }
 
 func getheader(p string) gopherdir {
-	data, err := ioutil.ReadFile(path.Join(p, ".head"))
 	l := gopherdir{}
+
+	data, err := ioutil.ReadFile(path.Join(p, ".head"))
 	if err != nil {
 		return l
 	}
@@ -173,7 +174,7 @@ func main() {
 		if err != nil {
 			continue
 		}
-		conn.SetReadDeadline(time.Now().Add(timeout))
+		err = conn.SetReadDeadline(time.Now().Add(timeout))
 		if err != nil {
 			conn.Close()
 			continue
