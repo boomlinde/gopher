@@ -22,8 +22,16 @@ Metadata
 `gopher` reads `.head` files in its directories to produce page headers.
 These contain gopher selectors. The selectors only have to be partially
 written, and the server will fill missing columns with dummy data. This
-can be used to create a header for a file listing, or to produce an
-arbitrary Gopher page.
+can be used to create a header for a file listing.
+
+It also reads `.dir` files. These are like `.head` files in that they
+contain partial selectors. However, when present, they will replace the
+default directory listing altogether. Instead, in a `.dir` file, a
+selector with the item type "{" and display string "DIR}" will be
+replaced by a listing of the current directory.
+
+File names starting with "." won't be listed in the default listing, but
+will still be accessible if selected by a client.
 
 HTTP
 ----

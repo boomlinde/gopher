@@ -54,10 +54,10 @@ func newselector(line string) *gopherline {
 	return &ret
 }
 
-func getheader(p string) gopherdir {
+func readdirfile(p string, filename string) gopherdir {
 	l := gopherdir{}
 
-	data, err := ioutil.ReadFile(path.Join(p, ".head"))
+	data, err := ioutil.ReadFile(path.Join(p, filename))
 	if err != nil {
 		return l
 	}
@@ -71,12 +71,34 @@ func getheader(p string) gopherdir {
 	return l
 }
 
-func getdir(p, sel string) gopherdir {
+func getheader(p string) gopherdir {
+	return readdirfile(p, ".head")
+}
+
+func withtemplate(p string, dir gopherdir) gopherdir {
+	l := readdirfile(p, ".dir")
+	out := gopherdir{}
+	for _, line := range l {
+		if line.Ftype == '{' && line.Text == "DIR}" {
+			out = append(out, dir...)
+		} else {
+			out = append(out, line)
+		}
+	}
+
+	if len(out) == 0 {
+		return dir
+	} else {
+		return out
+	}
+}
+
+func listdir(p string, sel string) gopherdir {
 	files, err := ioutil.ReadDir(p)
 	if err != nil {
 		log.Fatal(err)
 	}
-	dir := getheader(p)
+	dir := gopherdir{}
 	for _, f := range files {
 		fname := f.Name()
 		if strings.HasPrefix(fname, ".") {
@@ -92,6 +114,11 @@ func getdir(p, sel string) gopherdir {
 		dir = append(dir, &line)
 	}
 	return dir
+}
+
+func getdir(p, sel string) gopherdir {
+	dir := getheader(p)
+	return append(dir, withtemplate(p, listdir(p, sel))...)
 }
 
 func isdir(p string) bool {
@@ -145,12 +172,12 @@ func handle(conn io.ReadWriteCloser) {
 func main() {
 	hn, err := os.Hostname()
 	if err != nil {
-		hn = "localhost"
+		hn = "127.0.0.1"
 	}
 
 	flag.IntVar(&config.port, "p", 70, "The port to listen to")
 	flag.StringVar(&config.dir, "d", ".", "The gopher root dir")
-	flag.StringVar(&config.name, "n", hn, "The hostname")
+	flag.StringVar(&config.name, "n", hn, "The host as listed in gopher directories")
 	flag.StringVar(&config.http, "w", "", "HTTP server address")
 	flag.Parse()
 
