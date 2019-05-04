@@ -37,10 +37,9 @@ func contains(sel string) bool {
 
 func newselector(line string) *gopherline {
 	ret := gopherline{'i', "", "/", config.name, config.port}
-	ret.Ftype, line = rune(line[0]), line[1:]
 	fields := strings.Split(line, "\t")
 	if len(fields) > 0 {
-		ret.Text = fields[0]
+		ret.Ftype, ret.Text = rune(line[0]), line[1:]
 	}
 	if len(fields) > 1 {
 		ret.Path = fields[1]
