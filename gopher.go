@@ -38,8 +38,8 @@ func contains(sel string) bool {
 func newselector(line string) *gopherline {
 	ret := gopherline{'i', "", "/", config.name, config.port}
 	fields := strings.Split(line, "\t")
-	if len(fields) > 0 {
-		ret.Ftype, ret.Text = rune(line[0]), line[1:]
+	if len(fields) > 0 && len(fields[0]) > 0 {
+		ret.Ftype, ret.Text = rune(fields[0][0]), fields[0][1:]
 	}
 	if len(fields) > 1 {
 		ret.Path = fields[1]
@@ -103,8 +103,14 @@ func listdir(p string, sel string) gopherdir {
 		if strings.HasPrefix(fname, ".") {
 			continue
 		}
+
+		ft, err := getft(filepath.Join(p, fname))
+		if err != nil {
+			continue
+		}
+
 		line := gopherline{
-			Ftype: getft(f),
+			Ftype: ft,
 			Text:  fname,
 			Path:  filepath.ToSlash(filepath.Join("/", sel, fname)),
 			Host:  config.name,
@@ -152,7 +158,13 @@ func handle(conn io.ReadWriteCloser) {
 
 	p := topath(config.dir, sel)
 
-	if isdir(p) {
+	fi, err := os.Stat(p)
+	if err != nil {
+		notfound.serialize(conn)
+		return
+	}
+
+	if fi.IsDir() {
 		getdir(p, sel).serialize(conn)
 	} else {
 		f, err := os.Open(p)

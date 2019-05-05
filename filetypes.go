@@ -20,14 +20,24 @@ var displaytypes = map[rune]string{
 	'I': "PIC", '9': "BIN", '5': "ARC", 'h': "HTM",
 }
 
-func getft(f os.FileInfo) rune {
+func getft(fpath string) (rune, error) {
+	f, err := os.Lstat(fpath)
+	if err != nil {
+		return '9', err
+	}
+	if f.Mode()&os.ModeSymlink != 0 {
+		f, err = os.Stat(fpath)
+		if err != nil {
+			return '9', err
+		}
+	}
 	if f.IsDir() {
-		return '1'
+		return '1', nil
 	}
 	extension := strings.ToLower(filepath.Ext(f.Name()))
 	t, ok := filetypes[extension]
 	if !ok {
-		return '9'
+		return '9', nil
 	}
-	return t
+	return t, nil
 }
